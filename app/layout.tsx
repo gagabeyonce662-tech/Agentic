@@ -1,47 +1,63 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { Inter, Instrument_Serif } from "next/font/google"
-import "./globals.css"
+import React from "react"
+import type { Metadata } from 'next'
+import { Geist, Geist_Mono, IBM_Plex_Sans } from 'next/font/google'
+import { Courier_Prime } from 'next/font/google'
+import { Analytics } from '@vercel/analytics/next'
+import './globals.css'
+import { marketingContent } from '@/content/marketing'
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-  preload: true,
-})
-
-const instrumentSerif = Instrument_Serif({
-  subsets: ["latin"],
-  variable: "--font-instrument-serif",
-  weight: ["400"],
-  display: "swap",
-  preload: true,
-})
+const _geist = Geist({ subsets: ["latin"] });
+const _geistMono = Geist_Mono({ subsets: ["latin"] });
+const _courierPrime = Courier_Prime({ weight: ["400", "700"], subsets: ["latin"] });
+const _ibmPlexSans = IBM_Plex_Sans({ weight: ["300", "400", "500", "600"], subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Brillance - Effortless Custom Contract Billing",
-  description:
-    "Streamline your billing process with seamless automation for every custom contract, tailored by Brillance.",
-    generator: 'v0.app'
+  title: marketingContent.metadata.title,
+  description: marketingContent.metadata.description,
+  keywords: [...marketingContent.metadata.keywords],
+  authors: [{ name: marketingContent.brand.name }],
+  openGraph: {
+    title: marketingContent.metadata.title,
+    description: marketingContent.metadata.description,
+    type: 'website',
+    url: marketingContent.metadata.siteUrl,
+    siteName: marketingContent.brand.name,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: marketingContent.metadata.title,
+    description: marketingContent.metadata.description,
+  },
+  icons: {
+    icon: [
+      {
+        url: '/icon-light-32x32.png',
+        media: '(prefers-color-scheme: light)',
+      },
+      {
+        url: '/icon-dark-32x32.png',
+        media: '(prefers-color-scheme: dark)',
+      },
+      {
+        url: '/icon.svg',
+        type: 'image/svg+xml',
+      },
+    ],
+    apple: '/apple-icon.png',
+  },
 }
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode
-}) {
+}>) {
   return (
-    <html lang="en" className={`${inter.variable} ${instrumentSerif.variable} antialiased`}>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-        />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400&display=swap" />
-      </head>
-      <body className="font-sans antialiased">{children}</body>
+    <html lang="en">
+      <body className={`font-sans antialiased`}>
+        {children}
+        <Analytics />
+      </body>
     </html>
   )
 }
