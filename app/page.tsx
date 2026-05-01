@@ -107,6 +107,30 @@ export default function AgenticPage() {
     return () => mediaQuery.removeEventListener("change", updatePreference)
   }, [])
 
+  // Warm up hero video while intro animation is running.
+  useEffect(() => {
+    if (prefersReducedMotion) return
+
+    const preloadLink = document.createElement("link")
+    preloadLink.rel = "preload"
+    preloadLink.as = "video"
+    preloadLink.href = HERO_VIDEO_MP4
+    document.head.appendChild(preloadLink)
+
+    const warmupVideo = document.createElement("video")
+    warmupVideo.preload = "auto"
+    warmupVideo.muted = true
+    warmupVideo.playsInline = true
+    warmupVideo.src = HERO_VIDEO_MP4
+    warmupVideo.load()
+
+    return () => {
+      if (preloadLink.parentNode) preloadLink.parentNode.removeChild(preloadLink)
+      warmupVideo.removeAttribute("src")
+      warmupVideo.load()
+    }
+  }, [prefersReducedMotion])
+
   const handleMouse = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = e.currentTarget
     const rect = el.getBoundingClientRect()
