@@ -11,6 +11,10 @@ import { DevExSection } from "@/components/devex-section"
 import { HomeDashboard } from "@/components/home-dashboard"
 import { marketingContent } from "@/content/marketing"
 
+const HERO_VIDEO_MP4 =
+  "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/agentic-hero-9yW3wnTNMfn2U6lsVhTTZSJFEvAoSj.mp4"
+const HERO_VIDEO_POSTER = "/images/arc.png"
+
 // ─── Intersection Observer hook ──────────────────────────────────────────────
 function useInView(threshold = 0.15) {
   const ref = useRef<HTMLDivElement>(null)
@@ -84,6 +88,7 @@ export default function AgenticPage() {
   const [submitted, setSubmitted] = useState(false)
   const [heroReady, setHeroReady] = useState(false)
   const [videoReady, setVideoReady] = useState(false)
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
   const handleIntroDone = useCallback(() => {
     setHeroReady(true)
   }, [])
@@ -92,6 +97,14 @@ export default function AgenticPage() {
   useEffect(() => {
     const t = setTimeout(() => setVideoReady(true), HERO_REVEAL_MS)
     return () => clearTimeout(t)
+  }, [])
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)")
+    const updatePreference = () => setPrefersReducedMotion(mediaQuery.matches)
+    updatePreference()
+    mediaQuery.addEventListener("change", updatePreference)
+    return () => mediaQuery.removeEventListener("change", updatePreference)
   }, [])
 
   const handleMouse = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -114,18 +127,34 @@ export default function AgenticPage() {
       <section className="relative h-screen overflow-hidden">
 
         {/* Video background — zooms in once intro is done */}
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover z-0"
-          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/agentic-hero-9yW3wnTNMfn2U6lsVhTTZSJFEvAoSj.mp4"
-          style={{
-            transform: videoReady ? "scale(1.05)" : "scale(0.85)",
-            transition: "transform 2s cubic-bezier(0.16, 1, 0.3, 1)",
-          }}
-        />
+        {prefersReducedMotion ? (
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full object-cover z-0"
+            style={{
+              backgroundImage: `url(${HERO_VIDEO_POSTER})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          />
+        ) : (
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="metadata"
+            poster={HERO_VIDEO_POSTER}
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full object-cover z-0"
+            style={{
+              transform: videoReady ? "scale(1.05)" : "scale(0.85)",
+              transition: "transform 2s cubic-bezier(0.16, 1, 0.3, 1)",
+            }}
+          >
+            <source src={HERO_VIDEO_MP4} type="video/mp4" />
+          </video>
+        )}
 
 
 
